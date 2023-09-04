@@ -22,6 +22,7 @@ int decimal_binario(int vetor[], int num){
         num = num / 2;
         i += 1;
     }
+
     
     // se o número decimal for negativo, precisa fazer a soma do complemento mais um
     // utiliza o "backup" do número decimal porque o número original foi transofrmado em positivo para a conversão em binário
@@ -72,6 +73,56 @@ int decimal_binario(int vetor[], int num){
     }
 }
 
+void deslocamento_direita(int matriz[2][32], int *QP, int len_negativo1) {
+    int i, j;
+    
+    
+    *QP = matriz[1][0];
+    for (i = 0; i < len_negativo1 - 1; i++) {
+        matriz[1][i] = matriz[1][i + 1];
+    }
+    
+    matriz[1][len_negativo1 - 1] = matriz[0][0];
+    
+    for (i = 0; i < len_negativo1 - 1; i++) {
+        matriz[0][i] = matriz[0][i + 1];
+    }
+    
+    for (i = 0; i < 2; i++) {
+        for (j = len_negativo1 - 1; j>= 0; j--) {
+            printf("%d", matriz[i][j]);
+        }
+    }
+    printf("\n");
+}
+
+void soma(int matriz1[2][32], int matriz2[2][32], int len_negativo1) {
+    // matriz1 -> P e matriz2 -> S ou A
+    int i, j, carry = 0, valor_soma;
+    
+    for (i = 1; i >= 0; i--) {
+        // o binário já tá ao contrário, não precisa inverter se não dá errado ( o P estaria invertido e o A ou S não)
+        for(j = 0; j < 32; j++){
+            
+            valor_soma = matriz1[i][j] + matriz2[i][j] + carry;
+        
+            // nesse caso, a soma pode dar 3. se der 3, o resultado na matriz tem que dar 1 mesmo
+            matriz1[i][j] = valor_soma % 2;
+            
+            // se for 3 / 2, o carry fica 1
+            carry = valor_soma / 2;
+        }
+    }
+    
+    for (i = 0; i < 2; i++) {
+        for (j = len_negativo1 - 1; j >= 0; j--) {
+            printf("%d", matriz1[i][j]);
+        }
+    }
+    
+    printf("\n");
+}
+
 int main(){
     int n1, binario_um[32], binario_negativo1[32], len_binario1, len_negativo1;
     int n2, binario_dois[32], len_binario2;
@@ -117,9 +168,9 @@ int main(){
     // criando as matrizes com os binários
     // duas linhas e cada linha tem 32 colunas, mas pode ser len_negativo1 (pra não ter que rodar por 32 bits) 
     // QA, QS e QP é pro último bit separado do resto 
-    int A[2][32], QA;
-    int S[2][32], QS;
-    int P[2][32], QP;
+    int A[2][32], QA = 0;
+    int S[2][32], QS = 0;
+    int P[2][32], QP = 0;
     
     for (i = 0; i < 32; i++) {
         A[0][i] = binario_um[i];
@@ -170,6 +221,25 @@ int main(){
     
     printf("%d\n", QP);
     
+    for (i = 0; i < len_negativo1; i++) {
+        if (P[1][0] == QP) {
+            deslocamento_direita(P, &QP, len_negativo1);
+        }
+        else if (P[1][0] == 1 && QP == 0) {
+            soma(P, S, len_negativo1);
+            deslocamento_direita(P, &QP, len_negativo1);
+        }
+        else {
+            soma(P, A, len_negativo1);
+            deslocamento_direita(P, &QP, len_negativo1);
+        }
+    }
+    
+    for(i = 0; i < 2; i++) {
+        for (j = len_negativo1 - 1; j >= 0; j--) {
+            printf("%d", P[i][j]);
+        }
+    }
     return 0;
     
 }
