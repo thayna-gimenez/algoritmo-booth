@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+void ler_entrada() {
+    
+}
+
 int decimal_binario(int vetor[], int num){
     int i, bkp_num = num;
 
@@ -76,18 +80,25 @@ int decimal_binario(int vetor[], int num){
 void deslocamento_direita(int matriz[2][32], int *QP, int len_negativo1) {
     int i, j;
     
-    
+    // o binário está ao contrário, então percorre a matriz da esquerda para a deslocamento_direita
+    // se ele tivesse invertido já, seria da direita para a esquerda
     *QP = matriz[1][0];
+    
+    // na segunda linha, o bit pega o valor do bit da frente
+    // com exceção do último bit, que pega do primeiro bit da primeira linha
     for (i = 0; i < len_negativo1 - 1; i++) {
         matriz[1][i] = matriz[1][i + 1];
     }
     
+    // pega o primeiro bit da primeira linha, assim como o QP
     matriz[1][len_negativo1 - 1] = matriz[0][0];
     
+    // mesmo processo da segunda linha, mas na primeira
     for (i = 0; i < len_negativo1 - 1; i++) {
         matriz[0][i] = matriz[0][i + 1];
     }
     
+    // printando o resultado
     for (i = 0; i < 2; i++) {
         for (j = len_negativo1 - 1; j>= 0; j--) {
             printf("%d", matriz[i][j]);
@@ -219,8 +230,9 @@ int main(){
         printf(" ");
     }
     
-    printf("%d\n", QP);
+    printf("%d\n\n", QP);
     
+    // printando o processo de soma e deslocamento
     for (i = 0; i < len_negativo1; i++) {
         if (P[1][0] == QP) {
             deslocamento_direita(P, &QP, len_negativo1);
@@ -235,11 +247,19 @@ int main(){
         }
     }
     
+    printf("\n");
+    
+    // printando resultado final
     for(i = 0; i < 2; i++) {
         for (j = len_negativo1 - 1; j >= 0; j--) {
             printf("%d", P[i][j]);
         }
+        
+        printf(" ");
     }
+    
+    printf("%d", QP);
+    
     return 0;
     
 }
